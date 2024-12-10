@@ -1,0 +1,107 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: openobserve-postgres
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: openobserve
+      POSTGRES_USER: openobserve
+      POSTGRES_PASSWORD: openobserve123
+      ZO_META_STORE: "postgres"
+      ZO_META_POSTGRES_DSN: "postgres://openobserve:openobserve123@postgres:5432/openobserve"
+      POSTGRES_LOG_LEVEL: "debug"
+      POSTGRES_LOG_STATEMENT: "all"
+      POSTGRES_LOG_CONNECTIONS: "on"
+      POSTGRES_LOG_DISCONNECTIONS: "on"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openobserve -d openobserve"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["postgres", "-c", "log_statement=all", "-c", "log_min_messages=debug1"]
+
+  minio:
+    image: minio/minio:latest
+    container_name: openobserve-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_REGION_NAME: "us-east-1"
+      MINIO_HTTP_TRACE: "/dev/stdout"
+      MINIO_LOG_QUERY: "on"
+      MINIO_LOG_LEVEL: "debug"
+    command: server /data --console-address ":9091"
+    ports:
+      - "9090:9000"
+      - "9091:9091"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    container_name: openobserve
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      ZO_ROOT_USER_EMAIL: "admin@example.com"
+      ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+      ZO_META_STORE: "postgres"
+      ZO_META_POSTGRES_DSN: "postgres://openobserve:openobserve123@postgres:5432/openobserve"
+      ZO_S3_PROVIDER: "minio"
+      ZO_S3_SERVER_URL: "http://minio:9000"
+      ZO_S3_BUCKET_NAME: "openobserve"
+      ZO_S3_REGION_NAME: "us-east-1"
+      ZO_S3_ACCESS_KEY: "minioadmin"
+      ZO_S3_SECRET_KEY: "minioadmin123"
+      ZO_S3_BUCKET_PREFIX: "local"
+      RUST_LOG: "debug"
+      ZO_LOG_LEVEL: "debug"
+      ZO_LOG_FORMAT: "text"
+    ports:
+      - "5080:5080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5080/api/health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  log-generator:
+    build:
+      context: ./containers/syslog_log_generator
+      dockerfile: Dockerfile
+    container_name: openobserve-log-generator
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      openobserve:
+        condition: service_healthy
+    volumes:
+      - ./generate_logs.sh:/usr/local/bin/generate_logs.sh
+    networks:
+      - default
+    restart: unless-stopped
+
+networks:
+  default:
+    name: openobserve-network
+
+volumes:
+  postgres_data:
+  minio_data:
