@@ -1,6 +1,6 @@
 services:
   minio:
-    image: quay.io/minio/minio:latest
+    image: quay.io/minio/minio:RELEASE.2024-10-29T16-01-48Z
     container_name: openobserve-sqlite-minio
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -11,6 +11,7 @@ services:
       MINIO_LOG_LEVEL: "debug"
       MINIO_AUDIT_WEBHOOK_ENABLE: "on"
       MINIO_AUDIT_WEBHOOK_ENDPOINT: "http://syslog-ng:1514"
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
     command: server /data --console-address ":9093"
     ports:
       - "9092:9000"
@@ -29,7 +30,7 @@ services:
         condition: service_healthy
 
   syslog-ng:
-    image: lscr.io/linuxserver/syslog-ng:latest
+    image: lscr.io/linuxserver/syslog-ng:4.7.1
     container_name: syslog-ng-sqlite
     cap_add:
       # Allows the container to bind to privileged ports (ports below 1024)
@@ -89,7 +90,7 @@ services:
   #     - ./containers/syslog-ng/socket:/var/run/
 
   openobserve:
-    image: public.ecr.aws/zinclabs/openobserve:latest
+    image: public.ecr.aws/zinclabs/openobserve:v0.13.2-rc4-debug
     container_name: openobserve-sqlite
     restart: unless-stopped
     depends_on:
@@ -143,7 +144,7 @@ services:
     restart: unless-stopped
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v3.0.1
     container_name: prometheus_sbx
     volumes:
       - ./docker/prometheus/:/etc/prometheus/
@@ -178,7 +179,7 @@ services:
     #     condition: service_healthy
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:11.4.0
     container_name: grafana_sbx
     environment:
       GF_SECURITY_ADMIN_PASSWORD: foobar
