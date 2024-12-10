@@ -69,7 +69,7 @@ logs-sqlite:
 
 # show running containers for SQLite stack
 ps-sqlite:
-	docker compose -f docker-compose.sqlite.yaml ps
+	docker compose -f docker-compose.sqlite.yaml ps -a
 
 # restart the docker compose stack
 restart:
