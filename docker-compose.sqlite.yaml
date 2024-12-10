@@ -9,12 +9,15 @@ services:
       MINIO_HTTP_TRACE: "/dev/stdout"
       MINIO_LOG_QUERY: "on"
       MINIO_LOG_LEVEL: "debug"
+      MINIO_AUDIT_WEBHOOK_ENABLE: "on"
+      MINIO_AUDIT_WEBHOOK_ENDPOINT: "http://syslog-ng:1514"
     command: server /data --console-address ":9093"
     ports:
       - "9092:9000"
       - "9093:9093"
     volumes:
       - minio_sqlite_data:/data
+      - ./minio_audit_logs:/minio/audit/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -30,7 +33,18 @@ services:
       - TZ=Etc/UTC
     volumes:
       - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf
-      - ./syslog-ng/logs:/var/log
+      # - ./syslog-ng/logs:/var/log
+
+      #  find . -type f -name "*log*" ! -name "*.gz" ! -name "*.[0-9]" ! -name "*.[0-9][0-9]" | pbcopy
+
+      # Application specific log directories
+      - ./logs/usr/lib/unifi/logs:/var/log/unifi:ro
+      - ./logs/var/log/postgresql:/var/log/postgresql:ro
+      - ./logs/var/log/nginx:/var/log/nginx:ro
+      - ./logs/var/log/apt:/var/log/apt:ro
+      - ./logs/var/log/unattended-upgrades:/var/log/unattended-upgrades:ro
+      - ./logs/data/unifi-core/logs:/var/log/unifi-core:ro
+      - ./logs/srv/unifi/logs:/var/log/unifi-srv:ro
     ports:
       - 1515:1514/udp
       - 1602:1601/tcp
@@ -38,6 +52,8 @@ services:
     restart: unless-stopped
     depends_on:
       - openobserve
+
+
 
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest

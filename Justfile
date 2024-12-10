@@ -37,7 +37,8 @@ down:
 reset:
 	docker compose down --volumes --remove-orphans
 	docker compose rm -f
-	docker compose up -d
+	sleep 30
+	docker compose up -d --build
 
 # show the logs
 logs:
@@ -59,7 +60,8 @@ down-sqlite:
 reset-sqlite:
 	docker compose -f docker-compose.sqlite.yaml down --volumes --remove-orphans
 	docker compose -f docker-compose.sqlite.yaml rm -f
-	docker compose -f docker-compose.sqlite.yaml up -d
+	sleep 30
+	docker compose -f docker-compose.sqlite.yaml up -d --build
 
 # show the logs for SQLite stack
 logs-sqlite:
@@ -68,3 +70,23 @@ logs-sqlite:
 # show running containers for SQLite stack
 ps-sqlite:
 	docker compose -f docker-compose.sqlite.yaml ps
+
+# restart the docker compose stack
+restart:
+	docker compose restart -d
+	docker compose logs -f | ccze -A
+
+# restart the docker compose stack with SQLite backend
+restart-sqlite:
+	docker compose -f docker-compose.sqlite.yaml restart -d
+	docker compose -f docker-compose.sqlite.yaml logs -f | ccze -A
+
+# restart only syslog-ng service
+restart-syslog:
+	docker compose restart syslog-ng -d
+	docker compose logs -f syslog-ng | ccze -A
+
+# restart only syslog-ng service for SQLite stack
+restart-syslog-sqlite:
+	docker compose -f docker-compose.sqlite.yaml restart syslog-ng -d
+	docker compose -f docker-compose.sqlite.yaml logs -f syslog-ng | ccze -A

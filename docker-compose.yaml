@@ -60,9 +60,22 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf
-      # - ./syslog-ng/config:/config
+      # Configuration
+      - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf:ro
+
+      # Main logs directory
       - ./syslog-ng/logs:/var/log
+
+      #  find . -type f -name "*log*" ! -name "*.gz" ! -name "*.[0-9]" ! -name "*.[0-9][0-9]" | pbcopy
+
+      # Application specific log directories
+      - ./logs/usr/lib/unifi/logs:/var/log/unifi:ro
+      - ./logs/var/log/postgresql:/var/log/postgresql:ro
+      - ./logs/var/log/nginx:/var/log/nginx:ro
+      - ./logs/var/log/apt:/var/log/apt:ro
+      - ./logs/var/log/unattended-upgrades:/var/log/unattended-upgrades:ro
+      - ./logs/data/unifi-core/logs:/var/log/unifi-core:ro
+      - ./logs/srv/unifi/logs:/var/log/unifi-srv:ro
     ports:
       - 1514:1514/udp
       - 1601:1601/tcp
