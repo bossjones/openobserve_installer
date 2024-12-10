@@ -6,6 +6,7 @@ RUN apt-get update && \
     curl \
     netcat-openbsd \
     bsdutils \
+    python3 \
     python3-dev \
     python3-pip \
     python3-setuptools \
@@ -15,6 +16,8 @@ RUN apt-get update && \
 
 # Copy the log generation script
 COPY generate_logs.sh /usr/local/bin/generate_logs.sh
+COPY syslog_gen.py /usr/local/bin/syslog_gen.py
+COPY sample_logs.txt /usr/local/bin/sample_logs.txt
 
 # Make the script executable
 RUN chmod +x /usr/local/bin/generate_logs.sh
