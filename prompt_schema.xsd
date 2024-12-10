@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Root element -->
+    <xs:element name="prompt">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="purpose" type="xs:string"/>
+
+                <!-- Instructions section -->
+                <xs:element name="instructions">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="instruction" type="xs:string" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Examples section -->
+                <xs:element name="examples">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="example" type="xs:string" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Output format section -->
+                <xs:element name="output_format" type="xs:string"/>
+
+                <!-- Configuration steps section -->
+                <xs:element name="configuration-steps">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="step" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string"/>
+                                        <xs:element name="description" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Validation steps section -->
+                <xs:element name="validation-steps">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="step" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string"/>
+                                        <xs:element name="description" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Troubleshooting section -->
+                <xs:element name="troubleshooting">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="issue" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string"/>
+                                        <xs:element name="solution" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Best practices section -->
+                <xs:element name="best-practices">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="practice" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string"/>
+                                        <xs:element name="description" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
