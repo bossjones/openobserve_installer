@@ -27,6 +27,7 @@ ai-commit:
 # start the docker compose stack
 up:
 	docker compose up -d --build
+	docker compose logs -f | ccze -A
 
 # stop the docker compose stack
 down:
