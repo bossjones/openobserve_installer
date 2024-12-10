@@ -72,8 +72,13 @@ services:
       RUST_LOG: "debug"
       ZO_LOG_LEVEL: "debug"
       ZO_LOG_FORMAT: "text"
+      LOCAL_MODE: false
+      ZO_LOCAL_MODE_STORAGE: "s3"
+      ZO_S3_FORCE_PATH_STYLE: true
     ports:
       - "5080:5080"
+    volumes:
+      - openobserve_data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5080/api/health"]
       interval: 30s
@@ -105,3 +110,4 @@ networks:
 volumes:
   postgres_data:
   minio_data:
+  openobserve_data:

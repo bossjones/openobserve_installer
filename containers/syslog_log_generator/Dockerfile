@@ -6,6 +6,11 @@ RUN apt-get update && \
     curl \
     netcat-openbsd \
     bsdutils \
+    python3-dev \
+    python3-pip \
+    python3-setuptools \
+    python3-wheel \
+    python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the log generation script
