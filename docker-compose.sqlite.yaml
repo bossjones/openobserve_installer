@@ -65,6 +65,26 @@ services:
       timeout: 10s
       retries: 10
 
+  sngexporter:
+    build:
+      context: ./containers/sngexporter
+      dockerfile: Dockerfile
+    container_name: sngexporter
+    restart: unless-stopped
+    ports:
+      - "9578:9578"
+    volumes:
+      # - ./containers/syslog-ng/config:/etc/syslog-ng
+      - ./containers/syslog-ng/config:/config
+    command:
+      - "--socket.path=/config/syslog-ng.ctl"
+      - "--stats-with-legacy"
+      - "--listen-address=9578"
+      - "--log-level=debug"
+    depends_on:
+      syslog-ng:
+        condition: service_healthy
+
   axosyslog-metrics-exporter:
     image: ghcr.io/axoflow/axosyslog-metrics-exporter:latest
     container_name: axosyslog-metrics-exporter

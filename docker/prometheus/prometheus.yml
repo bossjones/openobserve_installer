@@ -46,3 +46,8 @@ scrape_configs:
     static_configs:
       - targets: ['syslog-ng-exporter:9577']
     metrics_path: /metrics
+
+  - job_name: 'sngpe'
+    static_configs:
+      - targets: ['sngexporter:9578']
+    metrics_path: /metrics
