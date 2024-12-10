@@ -23,3 +23,19 @@ install:
 # Generate AI commit messages
 ai-commit:
 	aicommits --generate 3 --type conventional
+
+# start the docker compose stack
+up:
+	docker compose up -d
+
+# stop the docker compose stack
+down:
+	docker compose down
+
+# reset the docker compose stack
+reset:
+	docker compose down --volumes --remove-orphans
+
+# show the logs
+logs:
+	docker compose logs -f | ccze -A
