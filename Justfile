@@ -101,6 +101,8 @@ open-services:
 	{{PYTHON}} scripts/open-browser.py "http://localhost:9999"
 	@echo "🌐 Opening Grafana UI (http://localhost:3333)..."
 	{{PYTHON}} scripts/open-browser.py "http://localhost:3333"
+	@echo "🌐 Opening OpenObserve Data Sources UI (http://localhost:5081/web/ingestion/custom/logs/syslog?org_identifier=default)..."
+	{{PYTHON}} scripts/open-browser.py "http://localhost:5081/web/ingestion/custom/logs/syslog?org_identifier=default"
 	@echo "✨ All services opened in Firefox"
 
 # show logs for axosyslog-metrics-exporter
