@@ -53,7 +53,15 @@ services:
     depends_on:
       - openobserve
 
-
+  syslog-ng-exporter:
+    image: balabit/syslog-ng-exporter:latest
+    container_name: syslog-ng-exporter
+    ports:
+      - "9577:9577"
+    command:
+      - "--syslog-ng.socket=/var/run/syslog-ng.sock"
+    volumes:
+      - ./containers/syslog-ng/socket:/var/run/
 
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest

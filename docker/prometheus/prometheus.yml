@@ -11,8 +11,18 @@ scrape_configs:
   - job_name: 'openobserve'
     static_configs:
       - targets: ['openobserve-sqlite:5080']
+    metrics_path: /metrics
 
   - job_name: 'minio'
     metrics_path: /minio/v2/metrics/cluster
     static_configs:
       - targets: ['openobserve-sqlite-minio:9000']
+
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana_sbx:3000']
+
+  - job_name: 'syslog-ng'
+    static_configs:
+      - targets: ['syslog-ng-exporter:9577']
+    metrics_path: /metrics
