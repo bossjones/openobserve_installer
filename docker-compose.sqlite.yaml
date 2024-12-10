@@ -77,7 +77,7 @@ services:
       # - ./containers/syslog-ng/config:/etc/syslog-ng
       - ./containers/syslog-ng/config:/config
     command:
-      - "--socket.path=/config/syslog-ng.ctl"
+      - "--socket-path=/config/syslog-ng.ctl"
       - "--stats-with-legacy"
       - "--listen-address=9578"
       - "--log-level=debug"
