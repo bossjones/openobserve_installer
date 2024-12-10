@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version="4" pub_date="2024-12-10">
+  <ruleset name="UniFi Server" id="unifi-server-logs">
+    <patterns>
+      <pattern>unifi-server</pattern>
+    </patterns>
+
+    <rule id="unifi-api-error" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  - @ESTRING:message:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T15:55:39,929-05:00] <webapi-115> WARN  api    - Failed to read request body. URI: /api/s/default/stat/event, Request method: POST, Error message: Error parsing json: JsonParseException: line: 1 char: 44</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T15:55:39,929-05:00</test_value>
+            <test_value name="thread">webapi-115</test_value>
+            <test_value name="level">WARN</test_value>
+            <test_value name="component">api</test_value>
+            <test_value name="message">Failed to read request body. URI: /api/s/default/stat/event, Request method: POST, Error message: Error parsing json: JsonParseException: line: 1 char: 44</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-inform-stat" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:   - client[@ESTRING:client_mac:] had retry bursts @NUMBER:retry_bursts@ on ap[@ESTRING:ap_mac:]</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:00:13,045-05:00] <inform_stat-2> WARN  stat   - client[ea:90:61:dc:66:39] had retry bursts 15 on ap[f0:9f:c2:33:bd:71]</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:00:13,045-05:00</test_value>
+            <test_value name="thread">inform_stat-2</test_value>
+            <test_value name="level">WARN</test_value>
+            <test_value name="component">stat</test_value>
+            <test_value name="client_mac">ea:90:61:dc:66:39</test_value>
+            <test_value name="retry_bursts">15</test_value>
+            <test_value name="ap_mac">f0:9f:c2:33:bd:71</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-sanitize-warning" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component: - Invalid key exists in NetworkConf payload, key=@ESTRING:invalid_key:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:06:21,924-05:00] <webapi-79> WARN  sanitize - Invalid key exists in NetworkConf payload, key=ipv6_enabled</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:06:21,924-05:00</test_value>
+            <test_value name="thread">webapi-79</test_value>
+            <test_value name="level">WARN</test_value>
+            <test_value name="component">sanitize</test_value>
+            <test_value name="invalid_key">ipv6_enabled</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-state-change" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  - @ESTRING:action: for site[@ESTRING:site_id:], total count: @NUMBER:total_count@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:07:59,239-05:00] <webapi-79> INFO  state  - Added WS listener for site[59456a81bc8c0045a9acadaa], total count: 3</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:07:59,239-05:00</test_value>
+            <test_value name="thread">webapi-79</test_value>
+            <test_value name="level">INFO</test_value>
+            <test_value name="component">state</test_value>
+            <test_value name="action">Added WS listener</test_value>
+            <test_value name="site_id">59456a81bc8c0045a9acadaa</test_value>
+            <test_value name="total_count">3</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-setup-info" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  - @ESTRING:message:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:29:03,740-05:00] <webapi-126> INFO  setup  - Ucore backup import. Parameters: [SKIP_ADMINISTRATOR_USERS_AND_BACKUP_UISETTINGS, SKIP_PRIVILEGES, SKIP_HOSTSPOT_OP]</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:29:03,740-05:00</test_value>
+            <test_value name="thread">webapi-126</test_value>
+            <test_value name="level">INFO</test_value>
+            <test_value name="component">setup</test_value>
+            <test_value name="message">Ucore backup import. Parameters: [SKIP_ADMINISTRATOR_USERS_AND_BACKUP_UISETTINGS, SKIP_PRIVILEGES, SKIP_HOSTSPOT_OP]</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+  </ruleset>
+</patterndb>

@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version="4" pub_date="2024-12-10">
+  <ruleset name="MongoDB" id="mongodb-logs">
+    <patterns>
+      <pattern>mongod</pattern>
+    </patterns>
+
+    <rule id="mongodb-startup" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] @ESTRING:message:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:01.090-0500 I CONTROL  [signalProcessingThread] pid=2150 port=27117 64-bit host=UCKG2</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:01.090-0500</test_value>
+            <test_value name="component">CONTROL</test_value>
+            <test_value name="thread">signalProcessingThread</test_value>
+            <test_value name="message">pid=2150 port=27117 64-bit host=UCKG2</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="mongodb-version" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] db version @ESTRING:db_version:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:01.090-0500 I CONTROL  [signalProcessingThread] db version v3.6.23</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:01.090-0500</test_value>
+            <test_value name="component">CONTROL</test_value>
+            <test_value name="thread">signalProcessingThread</test_value>
+            <test_value name="db_version">v3.6.23</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="mongodb-git-version" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] git version: @ESTRING:git_version:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:01.090-0500 I CONTROL  [signalProcessingThread] git version: 7e9159ff564980384f9703a7104074f6e36cd611</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:01.090-0500</test_value>
+            <test_value name="component">CONTROL</test_value>
+            <test_value name="thread">signalProcessingThread</test_value>
+            <test_value name="git_version">7e9159ff564980384f9703a7104074f6e36cd611</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="mongodb-network-connection" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] connection accepted from @ESTRING:client_ip::@#@ESTRING:connection_id: (@NUMBER:open_connections@ connections now open)</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:17.245-0500 I NETWORK  [listener] connection accepted from 127.0.0.1:33378 #27012 (9 connections now open)</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:17.245-0500</test_value>
+            <test_value name="component">NETWORK</test_value>
+            <test_value name="thread">listener</test_value>
+            <test_value name="client_ip">127.0.0.1:33378</test_value>
+            <test_value name="connection_id">27012</test_value>
+            <test_value name="open_connections">9</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="mongodb-client-metadata" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] received client metadata from @ESTRING:client_ip: @ESTRING:: { @ESTRING:client_metadata:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:17.250-0500 I NETWORK  [conn27012] received client metadata from 127.0.0.1:33378 conn27012: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "3.6.23" }, os: { type: "Linux", name: "PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"", architecture: "aarch64", version: "Kernel 3.18.44-ui-qcom" } }</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:17.250-0500</test_value>
+            <test_value name="component">NETWORK</test_value>
+            <test_value name="thread">conn27012</test_value>
+            <test_value name="client_ip">127.0.0.1:33378</test_value>
+            <test_value name="client_metadata">application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "3.6.23" }, os: { type: "Linux", name: "PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"", architecture: "aarch64", version: "Kernel 3.18.44-ui-qcom" } }</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="mongodb-connection-end" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] @ESTRING:component:: [@ESTRING:thread:] end connection @ESTRING:client_ip: (@NUMBER:open_connections@ connections now open)</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024-11-09T20:17:17.263-0500 I NETWORK  [conn27012] end connection 127.0.0.1:33378 (8 connections now open)</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-09T20:17:17.263-0500</test_value>
+            <test_value name="component">NETWORK</test_value>
+            <test_value name="thread">conn27012</test_value>
+            <test_value name="client_ip">127.0.0.1:33378</test_value>
+            <test_value name="open_connections">8</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+  </ruleset>
+</patterndb>

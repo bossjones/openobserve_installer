@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version="4" pub_date="2024-12-10">
+  <ruleset name="UniFi Startup" id="unifi-startup-logs">
+    <patterns>
+      <pattern>unifi-startup</pattern>
+    </patterns>
+
+    <rule id="unifi-startup-general" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  - @ESTRING:message:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:29:19,025-05:00] <launcher> INFO  startup - Initiating startup</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:29:19,025-05:00</test_value>
+            <test_value name="thread">launcher</test_value>
+            <test_value name="level">INFO</test_value>
+            <test_value name="component">startup</test_value>
+            <test_value name="message">Initiating startup</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-startup-component-init" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  -   component[@ESTRING:init_component:] initialization took @NUMBER:init_time@ms</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:29:22,966-05:00] <launcher> WARN  startup -   component[systemService] initialization took 114ms</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:29:22,966-05:00</test_value>
+            <test_value name="thread">launcher</test_value>
+            <test_value name="level">WARN</test_value>
+            <test_value name="component">startup</test_value>
+            <test_value name="init_component">systemService</test_value>
+            <test_value name="init_time">114</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-startup-complete" class="system">
+      <patterns>
+        <pattern>[@@ESTRING:timestamp:] &lt;@ESTRING:thread:&gt; @ESTRING:level:  @ESTRING:component:  - Startup complete</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>[2024-11-13T16:30:49,010-05:00] <launcher> INFO  startup - Startup complete</test_message>
+          <test_values>
+            <test_value name="timestamp">2024-11-13T16:30:49,010-05:00</test_value>
+            <test_value name="thread">launcher</test_value>
+            <test_value name="level">INFO</test_value>
+            <test_value name="component">startup</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="unifi-startup-cpu-time" class="system">
+      <patterns>
+        <pattern>Consumed CPU time during '@ESTRING:service:' startup: @ESTRING:cpu_time:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>Consumed CPU time during 'unifi.service' startup: 00:02:51</test_message>
+          <test_values>
+            <test_value name="service">unifi.service</test_value>
+            <test_value name="cpu_time">00:02:51</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+  </ruleset>
+</patterndb>

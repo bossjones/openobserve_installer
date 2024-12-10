@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version='4' pub_date='2024-03-20'>
+    <ruleset name='unifi-access' id='unifi-access-web'>
+        <description>Pattern database for UniFi Controller access logs</description>
+        <url>https://unifi.com</url>
+        <pattern>unifi-access</pattern>
+
+        <rules>
+            <!-- Main HTTP request pattern -->
+            <rule id='unifi_http_request' class='http-request'>
+                <patterns>
+                    <pattern>[${DATE}] [${PORT}] HTTP/1.1[${CLIENT_IP}] ${RESPONSE_TIME}ms ${STATUS_CODE} ${METHOD} ${PATH}</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2024-11-11T18:15:39,982Z] [8081] HTTP/1.1[127.0.0.1] -1ms 200 GET /status</test_message>
+                        <test_values>
+                            <test_value name='DATE'>2024-11-11T18:15:39,982Z</test_value>
+                            <test_value name='PORT'>8081</test_value>
+                            <test_value name='CLIENT_IP'>127.0.0.1</test_value>
+                            <test_value name='RESPONSE_TIME'>-1</test_value>
+                            <test_value name='STATUS_CODE'>200</test_value>
+                            <test_value name='METHOD'>GET</test_value>
+                            <test_value name='PATH'>/status</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.access</tag>
+                    <tag>http.request</tag>
+                </tags>
+                <values>
+                    <value name='application'>unifi-controller</value>
+                    <value name='facility'>local0</value>
+                    <value name='severity'>info</value>
+                    <value name='http.port'>${PORT}</value>
+                    <value name='http.client_ip'>${CLIENT_IP}</value>
+                    <value name='http.response_time'>${RESPONSE_TIME}</value>
+                    <value name='http.status_code'>${STATUS_CODE}</value>
+                    <value name='http.method'>${METHOD}</value>
+                    <value name='http.path'>${PATH}</value>
+                </values>
+            </rule>
+
+            <!-- API specific patterns -->
+            <rule id='unifi_api_request' class='api-request' context-id='unifi_http_request'>
+                <patterns>
+                    <pattern>[${DATE}] [${PORT}] HTTP/1.1[${CLIENT_IP}] ${RESPONSE_TIME}ms ${STATUS_CODE} ${METHOD} /api/**</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2024-11-11T18:15:40,083Z] [8081] HTTP/1.1[127.0.0.1] 144ms 200 POST /api/s/default/stat/event</test_message>
+                        <test_values>
+                            <test_value name='DATE'>2024-11-11T18:15:40,083Z</test_value>
+                            <test_value name='PORT'>8081</test_value>
+                            <test_value name='CLIENT_IP'>127.0.0.1</test_value>
+                            <test_value name='RESPONSE_TIME'>144</test_value>
+                            <test_value name='STATUS_CODE'>200</test_value>
+                            <test_value name='METHOD'>POST</test_value>
+                            <test_value name='PATH'>/api/s/default/stat/event</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.access</tag>
+                    <tag>http.request</tag>
+                    <tag>api.request</tag>
+                </tags>
+                <values>
+                    <value name='api.endpoint'>${PATH}</value>
+                </values>
+            </rule>
+
+            <!-- Inform specific patterns -->
+            <rule id='unifi_inform_request' class='inform-request' context-id='unifi_http_request'>
+                <patterns>
+                    <pattern>[${DATE}] [${PORT}] HTTP/1.1[${CLIENT_IP}] ${RESPONSE_TIME}ms ${STATUS_CODE} POST /inform</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2024-11-11T18:15:42,855Z] [8080] HTTP/1.1[192.168.3.7] 8ms 200 POST /inform</test_message>
+                        <test_values>
+                            <test_value name='DATE'>2024-11-11T18:15:42,855Z</test_value>
+                            <test_value name='PORT'>8080</test_value>
+                            <test_value name='CLIENT_IP'>192.168.3.7</test_value>
+                            <test_value name='RESPONSE_TIME'>8</test_value>
+                            <test_value name='STATUS_CODE'>200</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.access</tag>
+                    <tag>http.request</tag>
+                    <tag>device.inform</tag>
+                </tags>
+                <values>
+                    <value name='device.ip'>${CLIENT_IP}</value>
+                </values>
+            </rule>
+        </rules>
+    </ruleset>
+</patterndb>

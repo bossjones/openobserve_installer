@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version="4" pub_date="2024-12-10">
+  <ruleset name="nginx" id="nginx-errors">
+    <patterns>
+      <pattern>nginx</pattern>
+    </patterns>
+
+    <rule id="nginx-signal" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] [@ESTRING:pid::] signal @NUMBER:signal@ (@ESTRING:signal_name:)) received from @NUMBER:sender_pid@, @ESTRING:action:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024/11/13 16:17:01 [notice] 2026#2026: signal 10 (SIGUSR1) received from 3192188, reopening logs</test_message>
+          <test_values>
+            <test_value name="timestamp">2024/11/13 16:17:01</test_value>
+            <test_value name="pid">2026#2026</test_value>
+            <test_value name="signal">10</test_value>
+            <test_value name="signal_name">SIGUSR1</test_value>
+            <test_value name="sender_pid">3192188</test_value>
+            <test_value name="action">reopening logs</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="nginx-worker-action" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] [@ESTRING:pid::] @ESTRING:action:@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024/11/13 16:28:57 [notice] 2026#2026: start worker process 3200323</test_message>
+          <test_values>
+            <test_value name="timestamp">2024/11/13 16:28:57</test_value>
+            <test_value name="pid">2026#2026</test_value>
+            <test_value name="action">start worker process 3200323</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="nginx-worker-exit" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] [@ESTRING:pid::] worker process @NUMBER:worker_pid@ exited with code @NUMBER:exit_code@</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024/11/13 16:28:57 [notice] 2026#2026: worker process 2460965 exited with code 0</test_message>
+          <test_values>
+            <test_value name="timestamp">2024/11/13 16:28:57</test_value>
+            <test_value name="pid">2026#2026</test_value>
+            <test_value name="worker_pid">2460965</test_value>
+            <test_value name="exit_code">0</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+    <rule id="nginx-graceful-shutdown" class="system">
+      <patterns>
+        <pattern>@ESTRING:timestamp:] [@ESTRING:pid::] gracefully shutting down</pattern>
+      </patterns>
+      <examples>
+        <example>
+          <test_message>2024/11/13 16:28:57 [notice] 2460971#2460971: gracefully shutting down</test_message>
+          <test_values>
+            <test_value name="timestamp">2024/11/13 16:28:57</test_value>
+            <test_value name="pid">2460971#2460971</test_value>
+          </test_values>
+        </example>
+      </examples>
+    </rule>
+
+  </ruleset>
+</patterndb>

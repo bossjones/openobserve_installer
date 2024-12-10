@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version='4' pub_date='2024-03-20'>
+    <ruleset name='unifi-java-errors' id='unifi-java-oom'>
+        <description>Pattern database for UniFi Java Out of Memory errors</description>
+        <url>https://unifi.com</url>
+        <pattern>unifi-java</pattern>
+
+        <rules>
+            <!-- Java OOM Error Pattern -->
+            <rule id='java_oom_error' class='system-error'>
+                <patterns>
+                    <pattern>There is insufficient memory for the Java Runtime Environment to continue.
+Native memory allocation (mmap) failed to map ${BYTES} bytes for committing reserved memory.</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>There is insufficient memory for the Java Runtime Environment to continue.
+Native memory allocation (mmap) failed to map 12288 bytes for committing reserved memory.</test_message>
+                        <test_values>
+                            <test_value name='BYTES'>12288</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>java.error</tag>
+                    <tag>oom</tag>
+                    <tag>critical</tag>
+                </tags>
+                <values>
+                    <value name='application'>unifi-controller</value>
+                    <value name='facility'>daemon</value>
+                    <value name='severity'>critical</value>
+                    <value name='error.type'>OutOfMemoryError</value>
+                    <value name='error.bytes_requested'>${BYTES}</value>
+                </values>
+            </rule>
+
+            <!-- Java Thread Information Pattern -->
+            <rule id='java_thread_info' class='thread-info' context-id='java_oom_error'>
+                <patterns>
+                    <pattern>Current thread (${THREAD_ID}):  ${THREAD_NAME} ${THREAD_TYPE} [${THREAD_STATE}, id=${NATIVE_ID}, stack(${STACK_START},${STACK_END})]</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>Current thread (0x0000007eb402d800):  JavaThread "cron4j::scheduler[db8f24da3724ab9040ef19340000017f0be8130d241acf6b]::launcher[db8f24da3724ab901855b35b0000017fa47b93d6272b039e]" daemon [_thread_new, id=14731, stack(0x0000007f942a0000,0x0000007f943a0000)]</test_message>
+                        <test_values>
+                            <test_value name='THREAD_ID'>0x0000007eb402d800</test_value>
+                            <test_value name='THREAD_NAME'>cron4j::scheduler[db8f24da3724ab9040ef19340000017f0be8130d241acf6b]::launcher[db8f24da3724ab901855b35b0000017fa47b93d6272b039e]</test_value>
+                            <test_value name='THREAD_TYPE'>daemon</test_value>
+                            <test_value name='THREAD_STATE'>_thread_new</test_value>
+                            <test_value name='NATIVE_ID'>14731</test_value>
+                            <test_value name='STACK_START'>0x0000007f942a0000</test_value>
+                            <test_value name='STACK_END'>0x0000007f943a0000</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>java.thread</tag>
+                    <tag>debug</tag>
+                </tags>
+                <values>
+                    <value name='thread.id'>${THREAD_ID}</value>
+                    <value name='thread.name'>${THREAD_NAME}</value>
+                    <value name='thread.type'>${THREAD_TYPE}</value>
+                    <value name='thread.state'>${THREAD_STATE}</value>
+                    <value name='thread.native_id'>${NATIVE_ID}</value>
+                    <value name='thread.stack_start'>${STACK_START}</value>
+                    <value name='thread.stack_end'>${STACK_END}</value>
+                </values>
+            </rule>
+
+            <!-- JVM Version Information Pattern -->
+            <rule id='java_version_info' class='system-info' context-id='java_oom_error'>
+                <patterns>
+                    <pattern>JRE version: ${JRE_NAME} (${JRE_VERSION}) (build ${BUILD_INFO})
+Java VM: ${VM_NAME} (${VM_VERSION} ${VM_MODE} ${VM_PLATFORM} ${VM_OPTIONS})</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>JRE version: OpenJDK Runtime Environment (8.0_312-b07) (build 1.8.0_312-8u312-b07-1~deb9u1-b07)
+Java VM: OpenJDK 64-Bit Server VM (25.312-b07 mixed mode linux-aarch64 compressed oops)</test_message>
+                        <test_values>
+                            <test_value name='JRE_NAME'>OpenJDK Runtime Environment</test_value>
+                            <test_value name='JRE_VERSION'>8.0_312-b07</test_value>
+                            <test_value name='BUILD_INFO'>1.8.0_312-8u312-b07-1~deb9u1-b07</test_value>
+                            <test_value name='VM_NAME'>OpenJDK 64-Bit Server VM</test_value>
+                            <test_value name='VM_VERSION'>25.312-b07</test_value>
+                            <test_value name='VM_MODE'>mixed mode</test_value>
+                            <test_value name='VM_PLATFORM'>linux-aarch64</test_value>
+                            <test_value name='VM_OPTIONS'>compressed oops</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>java.version</tag>
+                    <tag>system.info</tag>
+                </tags>
+                <values>
+                    <value name='java.jre_name'>${JRE_NAME}</value>
+                    <value name='java.jre_version'>${JRE_VERSION}</value>
+                    <value name='java.build_info'>${BUILD_INFO}</value>
+                    <value name='java.vm_name'>${VM_NAME}</value>
+                    <value name='java.vm_version'>${VM_VERSION}</value>
+                    <value name='java.vm_mode'>${VM_MODE}</value>
+                    <value name='java.vm_platform'>${VM_PLATFORM}</value>
+                    <value name='java.vm_options'>${VM_OPTIONS}</value>
+                </values>
+            </rule>
+        </rules>
+    </ruleset>
+</patterndb>

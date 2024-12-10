@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<patterndb version='4' pub_date='2024-03-20'>
+    <ruleset name='unifi-migration' id='unifi-migration-logs'>
+        <description>Pattern database for UniFi Controller migration logs</description>
+        <url>https://unifi.com</url>
+        <pattern>migration</pattern>
+
+        <rules>
+            <!-- Migration Version Change Pattern -->
+            <rule id='migration_version_change' class='migration-start'>
+                <patterns>
+                    <pattern>[${TIMESTAMP}] <${COMPONENT}> ${LEVEL} migration - DB version (${FROM_VERSION}) different from Runtime Version(${TO_VERSION}), migrating...</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2022-08-10T03:08:08,177] <launcher> INFO migration - DB version (7.1.68) different from Runtime Version(7.2.92), migrating...</test_message>
+                        <test_values>
+                            <test_value name='TIMESTAMP'>2022-08-10T03:08:08,177</test_value>
+                            <test_value name='COMPONENT'>launcher</test_value>
+                            <test_value name='LEVEL'>INFO</test_value>
+                            <test_value name='FROM_VERSION'>7.1.68</test_value>
+                            <test_value name='TO_VERSION'>7.2.92</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.migration</tag>
+                    <tag>version.change</tag>
+                </tags>
+                <values>
+                    <value name='application'>unifi-controller</value>
+                    <value name='facility'>daemon</value>
+                    <value name='severity'>info</value>
+                    <value name='migration.from_version'>${FROM_VERSION}</value>
+                    <value name='migration.to_version'>${TO_VERSION}</value>
+                </values>
+            </rule>
+
+            <!-- Migration Step Start Pattern -->
+            <rule id='migration_step_start' class='migration-step'>
+                <patterns>
+                    <pattern>[${TIMESTAMP}] <${COMPONENT}> ${LEVEL} migration - Started migration step: ${STEP_NAME}</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2022-08-10T03:08:10,143] <launcher> INFO migration - Started migration step: Remove L3 Switch MAC from Network if it is not Layer 3 network</test_message>
+                        <test_values>
+                            <test_value name='TIMESTAMP'>2022-08-10T03:08:10,143</test_value>
+                            <test_value name='COMPONENT'>launcher</test_value>
+                            <test_value name='LEVEL'>INFO</test_value>
+                            <test_value name='STEP_NAME'>Remove L3 Switch MAC from Network if it is not Layer 3 network</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.migration</tag>
+                    <tag>step.start</tag>
+                </tags>
+                <values>
+                    <value name='migration.step'>${STEP_NAME}</value>
+                    <value name='migration.state'>started</value>
+                </values>
+            </rule>
+
+            <!-- Migration Step Finish Pattern -->
+            <rule id='migration_step_finish' class='migration-step'>
+                <patterns>
+                    <pattern>[${TIMESTAMP}] <${COMPONENT}> ${LEVEL} migration - Finished migration step: ${STEP_NAME}</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2022-08-10T03:08:10,156] <launcher> INFO migration - Finished migration step: Remove L3 Switch MAC from Network if it is not Layer 3 network</test_message>
+                        <test_values>
+                            <test_value name='TIMESTAMP'>2022-08-10T03:08:10,156</test_value>
+                            <test_value name='COMPONENT'>launcher</test_value>
+                            <test_value name='LEVEL'>INFO</test_value>
+                            <test_value name='STEP_NAME'>Remove L3 Switch MAC from Network if it is not Layer 3 network</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.migration</tag>
+                    <tag>step.finish</tag>
+                </tags>
+                <values>
+                    <value name='migration.step'>${STEP_NAME}</value>
+                    <value name='migration.state'>finished</value>
+                </values>
+            </rule>
+
+            <!-- Migration Complete Pattern -->
+            <rule id='migration_complete' class='migration-complete'>
+                <patterns>
+                    <pattern>[${TIMESTAMP}] <${COMPONENT}> ${LEVEL} migration - DB migration to version (${VERSION}) is complete.</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2022-08-10T03:08:11,243] <launcher> INFO migration - DB migration to version (7.2.92) is complete.</test_message>
+                        <test_values>
+                            <test_value name='TIMESTAMP'>2022-08-10T03:08:11,243</test_value>
+                            <test_value name='COMPONENT'>launcher</test_value>
+                            <test_value name='LEVEL'>INFO</test_value>
+                            <test_value name='VERSION'>7.2.92</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.migration</tag>
+                    <tag>migration.complete</tag>
+                </tags>
+                <values>
+                    <value name='migration.final_version'>${VERSION}</value>
+                    <value name='migration.state'>completed</value>
+                </values>
+            </rule>
+
+            <!-- UniFi OS Migration Pattern -->
+            <rule id='unifi_os_migration' class='os-migration'>
+                <patterns>
+                    <pattern>[${TIMESTAMP}] <${COMPONENT}> ${LEVEL} migration - ${ACTION} migration to UniFi OS</pattern>
+                </patterns>
+                <examples>
+                    <example>
+                        <test_message>[2022-08-10T03:08:26,083] <SimpleAsyncTaskExecutor-1> INFO migration - Starting migration to UniFi OS</test_message>
+                        <test_values>
+                            <test_value name='TIMESTAMP'>2022-08-10T03:08:26,083</test_value>
+                            <test_value name='COMPONENT'>SimpleAsyncTaskExecutor-1</test_value>
+                            <test_value name='LEVEL'>INFO</test_value>
+                            <test_value name='ACTION'>Starting</test_value>
+                        </test_values>
+                    </example>
+                </examples>
+                <tags>
+                    <tag>unifi.migration</tag>
+                    <tag>unifi.os</tag>
+                </tags>
+                <values>
+                    <value name='migration.type'>unifi-os</value>
+                    <value name='migration.action'>${ACTION}</value>
+                </values>
+            </rule>
+        </rules>
+    </ruleset>
+</patterndb>
