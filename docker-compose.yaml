@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-bookworm
     container_name: openobserve-postgres
     depends_on:
       minio:
@@ -75,6 +75,9 @@ services:
       LOCAL_MODE: false
       ZO_LOCAL_MODE_STORAGE: "s3"
       ZO_S3_FORCE_PATH_STYLE: true
+      ZO_TCP_PORT: 5514
+      ZO_UDP_PORT: 5514
+      ZO_TELEMETRY: false
     ports:
       - "5080:5080"
     volumes:
@@ -83,7 +86,8 @@ services:
     #   test: ["CMD", "curl", "-f", "http://localhost:5080/api/health"]
     #   interval: 30s
     #   timeout: 20s
-    #   retries: 3
+    #   retries: 5
+    #   start_period: 30s
 
   log-generator:
     build:

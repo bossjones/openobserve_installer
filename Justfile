@@ -35,6 +35,8 @@ down:
 # reset the docker compose stack
 reset:
 	docker compose down --volumes --remove-orphans
+	docker compose rm -f
+	docker compose up -d
 
 # show the logs
 logs:
