@@ -63,6 +63,7 @@ services:
       ZO_S3_FORCE_PATH_STYLE: true
       ZO_TCP_PORT: 5515
       ZO_UDP_PORT: 5515
+      ZO_LOCAL_MODE: true
       ZO_TELEMETRY: false
     ports:
       - "5081:5080"
@@ -74,6 +75,8 @@ services:
       context: ./containers/syslog_log_generator
       dockerfile: Dockerfile
     container_name: openobserve-sqlite-log-generator
+    environment:
+      REMOTE_HOSTNAME_LOGS: "openobserve-sqlite"
     depends_on:
       minio:
         condition: service_healthy
