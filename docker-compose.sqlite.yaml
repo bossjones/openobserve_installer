@@ -1,7 +1,7 @@
 services:
   minio:
     image: quay.io/minio/minio:latest
-    container_name: openobserve-minio
+    container_name: openobserve-sqlite-minio
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
@@ -9,15 +9,12 @@ services:
       MINIO_HTTP_TRACE: "/dev/stdout"
       MINIO_LOG_QUERY: "on"
       MINIO_LOG_LEVEL: "debug"
-      # MINIO_ACCESS_KEY: minio123
-      # MINIO_PROMETHEUS_AUTH_TYPE: public
-      # MINIO_SECRET_KEY: minio456
-    command: server /data --console-address ":9091"
+    command: server /data --console-address ":9093"
     ports:
-      - "9090:9000"
-      - "9091:9091"
+      - "9092:9000"
+      - "9093:9093"
     volumes:
-      - minio_data:/data
+      - minio_sqlite_data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -26,26 +23,25 @@ services:
 
   syslog-ng:
     image: lscr.io/linuxserver/syslog-ng:latest
-    container_name: syslog-ng
+    container_name: syslog-ng-sqlite
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
       - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf
-      # - ./syslog-ng/config:/config
       - ./syslog-ng/logs:/var/log
     ports:
-      - 1514:1514/udp
-      - 1601:1601/tcp
-      - 16514:16514/tcp
+      - 1515:1514/udp
+      - 1602:1601/tcp
+      - 16515:16514/tcp
     restart: unless-stopped
     depends_on:
       - openobserve
 
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
-    container_name: openobserve
+    container_name: openobserve-sqlite
     depends_on:
       minio:
         condition: service_healthy
@@ -55,35 +51,32 @@ services:
       ZO_META_STORE: "sqlite"
       ZO_S3_PROVIDER: "minio"
       ZO_S3_SERVER_URL: "http://minio:9000"
-      ZO_S3_BUCKET_NAME: "openobserve"
+      ZO_S3_BUCKET_NAME: "openobserve-sqlite"
       ZO_S3_REGION_NAME: "us-east-1"
       ZO_S3_ACCESS_KEY: "minioadmin"
       ZO_S3_SECRET_KEY: "minioadmin123"
-      ZO_S3_BUCKET_PREFIX: "local"
+      ZO_S3_BUCKET_PREFIX: "sqlite"
       RUST_LOG: "debug"
       ZO_LOG_LEVEL: "debug"
       ZO_LOG_FORMAT: "text"
-      # LOCAL_MODE: false
       ZO_LOCAL_MODE_STORAGE: "s3"
       ZO_S3_FORCE_PATH_STYLE: true
-      ZO_TCP_PORT: 5514
-      ZO_UDP_PORT: 5514
+      ZO_TCP_PORT: 5515
+      ZO_UDP_PORT: 5515
       ZO_TELEMETRY: false
     ports:
-      - "5080:5080"
+      - "5081:5080"
     volumes:
-      - openobserve_data:/data
-
+      - openobserve_sqlite_data:/data
 
   log-generator:
     build:
       context: ./containers/syslog_log_generator
       dockerfile: Dockerfile
-    container_name: openobserve-log-generator
+    container_name: openobserve-sqlite-log-generator
     depends_on:
       minio:
         condition: service_healthy
-
     volumes:
       - ./containers/syslog_log_generator/generate_logs.sh:/usr/local/bin/generate_logs.sh
     networks:
@@ -92,9 +85,8 @@ services:
 
 networks:
   default:
-    name: openobserve-network
+    name: openobserve-sqlite-network
 
 volumes:
-  postgres_data:
-  minio_data:
-  openobserve_data:
+  minio_sqlite_data:
+  openobserve_sqlite_data:
