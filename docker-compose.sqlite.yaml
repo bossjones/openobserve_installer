@@ -22,7 +22,10 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
-      retries: 3
+      retries: 10
+    depends_on:
+      syslog-ng:
+        condition: service_healthy
 
   syslog-ng:
     image: lscr.io/linuxserver/syslog-ng:latest
@@ -31,12 +34,9 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
+      - LOG_TO_STDOUT=true
     volumes:
-      - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf
-      # - ./syslog-ng/logs:/var/log
-
-      #  find . -type f -name "*log*" ! -name "*.gz" ! -name "*.[0-9]" ! -name "*.[0-9][0-9]" | pbcopy
-
+      - ./containers/syslog-ng/config:/config
       # Application specific log directories
       - ./logs/usr/lib/unifi/logs:/var/log/unifi:ro
       - ./logs/var/log/postgresql:/var/log/postgresql:ro
@@ -45,14 +45,17 @@ services:
       - ./logs/var/log/unattended-upgrades:/var/log/unattended-upgrades:ro
       - ./logs/data/unifi-core/logs:/var/log/unifi-core:ro
       - ./logs/srv/unifi/logs:/var/log/unifi-srv:ro
-      - syslog_ng_socket:/var/run/syslog-ng
     ports:
       - 1515:1514/udp
       - 1602:1601/tcp
       - 16515:16514/tcp
     restart: unless-stopped
-    depends_on:
-      - openobserve
+    depends_on: []
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep syslog-ng | grep -v grep"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
 
   axosyslog-metrics-exporter:
     image: ghcr.io/axoflow/axosyslog-metrics-exporter:latest
@@ -60,11 +63,17 @@ services:
     ports:
       - "9577:9577"
     volumes:
-      - syslog_ng_socket:/var/run/syslog-ng
+      - ./containers/syslog-ng/config:/config
     command:
-      - "--socket.path=/var/run/syslog-ng/syslog-ng.ctl"
+      - "--socket.path=/config/syslog-ng.ctl"
     depends_on:
-      - syslog-ng
+      syslog-ng:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9577/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
 
   # syslog-ng-exporter:
   #   image: balabit/syslog-ng-exporter:latest
@@ -81,6 +90,8 @@ services:
     container_name: openobserve-sqlite
     depends_on:
       minio:
+        condition: service_healthy
+      syslog-ng:
         condition: service_healthy
     environment:
       ZO_ROOT_USER_EMAIL: "admin@example.com"
@@ -106,6 +117,12 @@ services:
       - "5081:5080"
     volumes:
       - openobserve_sqlite_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   log-generator:
     build:
@@ -115,7 +132,9 @@ services:
     environment:
       REMOTE_HOSTNAME_LOGS: "openobserve-sqlite"
     depends_on:
-      minio:
+      openobserve:
+        condition: service_healthy
+      syslog-ng:
         condition: service_healthy
     volumes:
       - ./containers/syslog_log_generator/generate_logs.sh:/usr/local/bin/generate_logs.sh
@@ -149,6 +168,14 @@ services:
       driver: json-file
       options:
         tag: "{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      axosyslog-metrics-exporter:
+        condition: service_healthy
 
   grafana:
     image: grafana/grafana
@@ -176,6 +203,14 @@ services:
     restart: unless-stopped
     networks:
       - default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      prometheus:
+        condition: service_healthy
 
 networks:
   default:

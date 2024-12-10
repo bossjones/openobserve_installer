@@ -102,3 +102,27 @@ open-services:
 	@echo "🌐 Opening Grafana UI (http://localhost:3333)..."
 	{{PYTHON}} scripts/open-browser.py "http://localhost:3333"
 	@echo "✨ All services opened in Firefox"
+
+# show logs for axosyslog-metrics-exporter
+logs-metrics:
+	docker compose logs -f axosyslog-metrics-exporter | ccze -A
+
+# show logs for openobserve
+logs-zo:
+	docker compose logs -f openobserve | ccze -A
+
+# show logs for axosyslog-metrics-exporter (SQLite stack)
+logs-metrics-sqlite:
+	docker compose -f docker-compose.sqlite.yaml logs -f axosyslog-metrics-exporter | ccze -A
+
+# show logs for openobserve (SQLite stack)
+logs-zo-sqlite:
+	docker compose -f docker-compose.sqlite.yaml logs -f openobserve | ccze -A
+
+# show logs for syslog-ng
+logs-syslog:
+	docker compose logs -f syslog-ng | ccze -A
+
+# show logs for syslog-ng (SQLite stack)
+logs-syslog-sqlite:
+	docker compose -f docker-compose.sqlite.yaml logs -f syslog-ng | ccze -A
