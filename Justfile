@@ -45,3 +45,26 @@ logs:
 
 ps:
 	docker compose ps
+
+# start the docker compose stack with SQLite backend
+up-sqlite:
+	docker compose -f docker-compose.sqlite.yaml up -d --build
+	docker compose -f docker-compose.sqlite.yaml logs -f | ccze -A
+
+# stop the docker compose stack with SQLite backend
+down-sqlite:
+	docker compose -f docker-compose.sqlite.yaml down
+
+# reset the docker compose stack with SQLite backend
+reset-sqlite:
+	docker compose -f docker-compose.sqlite.yaml down --volumes --remove-orphans
+	docker compose -f docker-compose.sqlite.yaml rm -f
+	docker compose -f docker-compose.sqlite.yaml up -d
+
+# show the logs for SQLite stack
+logs-sqlite:
+	docker compose -f docker-compose.sqlite.yaml logs -f | ccze -A
+
+# show running containers for SQLite stack
+ps-sqlite:
+	docker compose -f docker-compose.sqlite.yaml ps
