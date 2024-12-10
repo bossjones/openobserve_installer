@@ -139,6 +139,8 @@ services:
         condition: service_healthy
     volumes:
       - ./containers/syslog_log_generator/generate_logs.sh:/usr/local/bin/generate_logs.sh
+      - ./containers/syslog_log_generator/syslog_gen.py:/usr/local/bin/syslog_gen.py
+      - ./containers/syslog_log_generator/sample_logs.txt:/usr/local/bin/sample_logs.txt
     networks:
       - default
     restart: unless-stopped

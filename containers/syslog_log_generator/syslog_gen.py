@@ -78,7 +78,7 @@ def syslogs_sender() -> None:
     - Syslog level
     - Process ID
     """
-    # Initalize SysLogHandler
+    # Initialize SysLogHandler
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     syslog = SysLogHandler(address=(args.host, args.port))
@@ -105,6 +105,21 @@ def syslogs_sender() -> None:
         )
         syslog.setFormatter(format)
 
+        # Create the complete formatted message
+        complete_message = format.format(
+            logging.LogRecord(
+                name="",
+                level=0,
+                pathname="",
+                lineno=0,
+                msg=message,
+                args=(),
+                exc_info=None,
+                extra=fields,
+            )
+        )
+
+        print(f"[+] Complete message: {complete_message}")
         print(f"[+] Sent: {time_output}: {message}", end="")
 
         getattr(logger, random_level)(message, extra=fields)
