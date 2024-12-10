@@ -84,7 +84,7 @@ def syslogs_sender() -> None:
     syslog = SysLogHandler(address=(args.host, args.port))
     logger.addHandler(syslog)
 
-    for message in range(1, args.count + 1):
+    for message_num in range(1, args.count + 1):
         # Randomize some fields
         time_output = time.strftime("%b %d %H:%M:%S")
         random_host = random.choice(range(1, 11))  # noqa: S311
@@ -105,23 +105,27 @@ def syslogs_sender() -> None:
         )
         syslog.setFormatter(format)
 
-        # Create the complete formatted message
-        complete_message = format.format(
-            logging.LogRecord(
-                name="",
-                level=0,
-                pathname="",
-                lineno=0,
-                msg=message,
-                args=(),
-                exc_info=None,
-                extra=fields,
-            )
+        # Create a LogRecord with the extra fields properly set
+        record = logging.LogRecord(
+            name="syslog",
+            level=getattr(logging, random_level.upper()),
+            pathname="",
+            lineno=0,
+            msg=message,
+            args=(),
+            exc_info=None,
         )
+        # Set the extra fields directly on the record
+        for key, value in fields.items():
+            setattr(record, key, value)
+
+        # Format the complete message using the record
+        complete_message = format.format(record)
 
         print(f"[+] Complete message: {complete_message}")
         print(f"[+] Sent: {time_output}: {message}", end="")
 
+        # Send the log with extra fields
         getattr(logger, random_level)(message, extra=fields)
 
     logger.removeHandler(syslog)

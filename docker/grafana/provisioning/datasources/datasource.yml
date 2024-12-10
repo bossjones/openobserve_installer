@@ -50,35 +50,24 @@ datasources:
   # <bool> allow users to edit datasources from the UI.
     editable: true
     uid: prometheus
-# - name: InfluxDB
-#   type: influxdb
-#   access: proxy
-#   # database: unifi
-#   user: unifipoller
-#   jsonData:
-#       dbName: unifi
-#       httpMode: GET
-#   secureJsonData:
-#     password: changeme
-#   basicAuthUser: unifipoller
-#   basicAuthPassword: changeme
-#   url: http://influxdb:8086
-#   editable: true
-#   uid: influxdb
-#   version: 1
-#   basicAuth: true
 
-# - name: Loki
-#   access: proxy
-#   basicAuth: false
-#   jsonData:
-#     httpHeaderName1: "X-Scope-OrgID"
-#     maxLines: 1000
-#   secureJsonData:
-#     httpHeaderValue1: "docker"
-#   editable: true
-#   isDefault: true
-#   type: loki
-#   uid: loki
-#   url: http://loki-gateway
-#   version: 1
+
+# datasources:
+#   - name: Prometheus
+#     type: prometheus
+#     access: proxy
+#     orgId: 1
+#     url: http://prometheus_sbx:9090
+#     basicAuth: false
+#     isDefault: true
+#     version: 1
+#     editable: true
+#     jsonData:
+#       timeInterval: "5s"
+#       httpMethod: "POST"
+#       manageAlerts: true
+#       prometheusType: "Prometheus"
+#       prometheusVersion: "2.44.0"
+#       cacheLevel: "High"
+#       disableRecordingRules: false
+#       incrementalQueryOverlapWindow: "10m"

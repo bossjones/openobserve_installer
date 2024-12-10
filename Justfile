@@ -128,3 +128,13 @@ logs-syslog:
 # show logs for syslog-ng (SQLite stack)
 logs-syslog-sqlite:
 	docker compose -f docker-compose.sqlite.yaml logs -f syslog-ng | ccze -A
+
+# stop only syslog-ng service
+stop-syslog:
+	docker compose stop syslog-ng
+	@echo "✨ syslog-ng service stopped"
+
+# stop only syslog-ng service for SQLite stack
+stop-syslog-sqlite:
+	docker compose -f docker-compose.sqlite.yaml stop syslog-ng
+	@echo "✨ syslog-ng service stopped (SQLite stack)"

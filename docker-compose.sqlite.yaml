@@ -188,7 +188,8 @@ services:
       GF_USERS_ALLOW_SIGN_UP: false
       GRAFANA_USERNAME: admin
       GRAFANA_PASSWORD: foobar
-      GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panel
+      # GF_INSTALL_PLUGINS: grafana-clock-panel,natel-discrete-panel,grafana-piechart-panels
+      GF_INSTALL_PLUGINS: grafana-clock-panel
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
       GF_AUTH_ANONYMOUS_ENABLED: true
       GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
