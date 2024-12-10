@@ -41,3 +41,6 @@ reset:
 # show the logs
 logs:
 	docker compose logs -f | ccze -A
+
+ps:
+	docker compose ps

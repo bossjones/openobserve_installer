@@ -11,10 +11,10 @@ services:
       POSTGRES_PASSWORD: openobserve123
       ZO_META_STORE: "postgres"
       ZO_META_POSTGRES_DSN: "postgres://openobserve:openobserve123@postgres:5432/openobserve"
-      POSTGRES_LOG_LEVEL: "debug"
-      POSTGRES_LOG_STATEMENT: "all"
-      POSTGRES_LOG_CONNECTIONS: "on"
-      POSTGRES_LOG_DISCONNECTIONS: "on"
+      # POSTGRES_LOG_LEVEL: "debug"
+      # POSTGRES_LOG_STATEMENT: "all"
+      # POSTGRES_LOG_CONNECTIONS: "on"
+      # POSTGRES_LOG_DISCONNECTIONS: "on"
     ports:
       - "5433:5432"
     volumes:
@@ -35,8 +35,11 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin123
       MINIO_REGION_NAME: "us-east-1"
       MINIO_HTTP_TRACE: "/dev/stdout"
-      MINIO_LOG_QUERY: "on"
-      MINIO_LOG_LEVEL: "debug"
+      # MINIO_LOG_QUERY: "on"
+      # MINIO_LOG_LEVEL: "debug"
+      # MINIO_ACCESS_KEY: minio123
+      # MINIO_PROMETHEUS_AUTH_TYPE: public
+      # MINIO_SECRET_KEY: minio456
     command: server /data --console-address ":9091"
     ports:
       - "9090:9000"
@@ -48,6 +51,25 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+
+  syslog-ng:
+    image: lscr.io/linuxserver/syslog-ng:latest
+    container_name: syslog-ng
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./containers/syslog-ng/config/syslog-ng.conf:/config/syslog-ng.conf
+      # - ./syslog-ng/config:/config
+      - ./syslog-ng/logs:/var/log
+    ports:
+      - 1514:1514/udp
+      - 1601:1601/tcp
+      - 16514:16514/tcp
+    restart: unless-stopped
+    depends_on:
+      - openobserve
 
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
@@ -69,8 +91,8 @@ services:
       ZO_S3_ACCESS_KEY: "minioadmin"
       ZO_S3_SECRET_KEY: "minioadmin123"
       ZO_S3_BUCKET_PREFIX: "local"
-      RUST_LOG: "debug"
-      ZO_LOG_LEVEL: "debug"
+      # RUST_LOG: "debug"
+      # ZO_LOG_LEVEL: "debug"
       ZO_LOG_FORMAT: "text"
       LOCAL_MODE: false
       ZO_LOCAL_MODE_STORAGE: "s3"
@@ -82,12 +104,7 @@ services:
       - "5080:5080"
     volumes:
       - openobserve_data:/data
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:5080/api/health"]
-    #   interval: 30s
-    #   timeout: 20s
-    #   retries: 5
-    #   start_period: 30s
+
 
   log-generator:
     build:
@@ -99,8 +116,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-      # openobserve:
-      #   condition: service_healthy
+
     volumes:
       - ./containers/syslog_log_generator/generate_logs.sh:/usr/local/bin/generate_logs.sh
     networks:
