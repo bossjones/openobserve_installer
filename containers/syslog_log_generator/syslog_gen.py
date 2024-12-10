@@ -5,27 +5,35 @@ Syslog Generator
 Had a need to generate generic syslog messages to
 test open source logging solutions.
 """
+from __future__ import annotations
 
-import socket
 import argparse
+import logging
 import random
+import socket
 import sys
 import time
-import logging
+
 from logging.handlers import SysLogHandler
 
-"""
-Modify these variables to change the hostname, domainame, and tag
-that show up in the log messages.
-"""
-hostname = "host"
-domain_name = ".example.com"
-tag = ["kernel", "python", "ids", "ips"]
-syslog_level = ["info", "error", "warn", "critical"]
+
+# Modify these variables to change the hostname, domainame, and tag
+# that show up in the log messages.
+
+hostname: str = "host"
+domain_name: str = ".example.com"
+tag: list[str] = ["kernel", "python", "ids", "ips"]
+syslog_level: list[str] = ["info", "error", "warn", "critical"]
 
 
-def raw_udp_sender(message, host, port):
-    # Stubbed in or later use
+def raw_udp_sender(message: str, host: str, port: int) -> None:
+    """Send a UDP message to a specified host and port.
+
+    Args:
+        message: The message to send
+        host: The target host address
+        port: The target port number
+    """
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         message = bytes(message, "UTF-8")
@@ -34,17 +42,42 @@ def raw_udp_sender(message, host, port):
         sock.close()
 
 
-def open_sample_log(sample_log):
+def open_sample_log(sample_log: str) -> str:
+    """Open and return a random line from a sample log file.
+
+    Args:
+        sample_log: Path to the sample log file
+
+    Returns:
+        A randomly selected log line
+
+    Raises:
+        FileNotFoundError: If the specified file cannot be found
+        SystemExit: If file is invalid
+    """
     try:
-        with open(sample_log, "r") as sample_log_file:
-            random_logs = random.choice(list(sample_log_file))
+        with open(sample_log) as sample_log_file:
+            random_logs = random.choice(list(sample_log_file))  # noqa: S311
             return random_logs
     except FileNotFoundError:
         print("[+] ERROR: Please specify valid filename")
         return sys.exit()
 
 
-def syslogs_sender():
+def syslogs_sender() -> None:
+    """Send syslog messages based on command line arguments.
+
+    Uses the global args object to determine:
+    - Target host and port
+    - Input file for messages
+    - Number of messages to send
+
+    Generates randomized fields for each message including:
+    - Hostname
+    - Tag
+    - Syslog level
+    - Process ID
+    """
     # Initalize SysLogHandler
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
@@ -54,11 +87,11 @@ def syslogs_sender():
     for message in range(1, args.count + 1):
         # Randomize some fields
         time_output = time.strftime("%b %d %H:%M:%S")
-        random_host = random.choice(range(1, 11))
-        random_tag = random.choice(tag)
-        random_level = random.choice(syslog_level)
-        fqdn = "{0}{1}{2}".format(hostname, random_host, domain_name)
-        random_pid = random.choice(range(500, 9999))
+        random_host = random.choice(range(1, 11))  # noqa: S311
+        random_tag = random.choice(tag)  # noqa: S311
+        random_level = random.choice(syslog_level)  # noqa: S311
+        fqdn = f"{hostname}{random_host}{domain_name}"
+        random_pid = random.choice(range(500, 9999))  # noqa: S311
 
         message = open_sample_log(args.file)
         fields = {
@@ -68,13 +101,11 @@ def syslogs_sender():
         }
 
         format = logging.Formatter(
-            "%(date_field)s %(host_field)s {0}[{1}]: %(message)s".format(
-                random_tag, random_pid
-            )
+            f"%(date_field)s %(host_field)s {random_tag}[{random_pid}]: %(message)s"
         )
         syslog.setFormatter(format)
 
-        print("[+] Sent: {0}: {1}".format(time_output, message), end="")
+        print(f"[+] Sent: {time_output}: {message}", end="")
 
         getattr(logger, random_level)(message, extra=fields)
 
@@ -103,9 +134,7 @@ if __name__ == "__main__":
 
     if args.sleep:
         print(
-            "[+] Sending {0} messages every {1} seconds to {2} on port {3}".format(
-                args.count, args.sleep, args.host, args.port
-            )
+            f"[+] Sending {args.count} messages every {args.sleep} seconds to {args.host} on port {args.port}"
         )
         try:
             while True:
@@ -116,8 +145,6 @@ if __name__ == "__main__":
             print("[+] Stopping syslog generator...")
     else:
         print(
-            "[+] Sending {0} messages to {1} on port {2}".format(
-                args.count, args.host, args.port
-            )
+            f"[+] Sending {args.count} messages to {args.host} on port {args.port}"
         )
         syslogs_sender()
