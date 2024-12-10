@@ -90,3 +90,15 @@ restart-syslog:
 restart-syslog-sqlite:
 	docker compose -f docker-compose.sqlite.yaml restart syslog-ng -d
 	docker compose -f docker-compose.sqlite.yaml logs -f syslog-ng | ccze -A
+
+# Open all services in Firefox browser
+open-services:
+	@echo "🌐 Opening OpenObserve UI (http://localhost:5081)..."
+	{{PYTHON}} scripts/open-browser.py "http://localhost:5081"
+	@echo "🌐 Opening MinIO Console (http://localhost:9093)..."
+	{{PYTHON}} scripts/open-browser.py "http://localhost:9093"
+	@echo "🌐 Opening Prometheus UI (http://localhost:9999)..."
+	{{PYTHON}} scripts/open-browser.py "http://localhost:9999"
+	@echo "🌐 Opening Grafana UI (http://localhost:3333)..."
+	{{PYTHON}} scripts/open-browser.py "http://localhost:3333"
+	@echo "✨ All services opened in Firefox"
