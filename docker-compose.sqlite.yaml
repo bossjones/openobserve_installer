@@ -92,6 +92,7 @@ services:
     ports:
       - "9577:9577"
     volumes:
+      # - ./containers/syslog-ng/config:/config
       - ./containers/syslog-ng/config:/config
     command:
       - "--socket.path=/config/syslog-ng.ctl"
